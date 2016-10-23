@@ -1,3 +1,4 @@
+
 # search.py
 # ---------
 # Licensing Information:  You are free to use or extend these projects for
@@ -92,7 +93,22 @@ def depthFirstSearch(problem):
 def breadthFirstSearch(problem):
     """Search the shallowest nodes in the search tree first."""
     "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    "util.raiseNotDefined()"
+
+    borda = util.Queue()
+    borda.push((problem.getStartState(), []))
+    visitado = []
+
+    while not borda.isEmpty():
+        no, acao = borda.pop()
+        for coord, direcao, passos in problem.getSuccessors(no):
+            if not coord in visitado:
+                if problem.isGoalState(coord):
+                    return acao + [direcao]
+                else:
+                    borda.push((coord, acao + [direcao]))
+                    visitado.append(coord)
+    return []
 
 def iterativeDeepeningSearch(problem):
     """
@@ -108,8 +124,23 @@ def iterativeDeepeningSearch(problem):
 
 def uniformCostSearch(problem):
     """Search the node of least total cost first."""
-    "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    "Insere na borda quem tem menor custo"
+    borda = util.PriorityQueue()
+    borda.push((problem.getStartState(), []), 0)
+    visitado = []
+
+    while not borda.isEmpty():
+        no, acoes = borda.pop()
+        if problem.isGoalState(no):
+            return acoes
+        visitado.append(no)
+        for coord, direcao, passos in problem.getSuccessors(no):
+            if not coord in visitado:
+                aux = acoes + [direcao]
+                custo = problem.getCostOfActions(aux)
+                borda.push((coord, aux), custo)
+    return []
+
 
 def nullHeuristic(state, problem=None):
     """
@@ -120,8 +151,23 @@ def nullHeuristic(state, problem=None):
 
 def aStarSearch(problem, heuristic=nullHeuristic):
     """Search the node that has the lowest combined cost and heuristic first."""
-    "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    estadoInicial = problem.getStartState()
+    borda = util.PriorityQueue()
+    borda.push((estadoInicial, []), heuristic(estadoInicial, problem))
+    visitado = []
+
+    while not borda.isEmpty():
+        no, acoes = borda.pop()
+        if problem.isGoalState(no):
+            return acoes
+        visitado.append(no)
+        for coord, direcao, passos in problem.getSuccessors(no):
+            if not coord in visitado:
+                aux = acoes + [direcao]
+                custo = problem.getCostOfActions(aux) + heuristic(coord, problem)
+                borda.push((coord, aux), custo)
+    return []
+    
 
 
 # Abbreviations
