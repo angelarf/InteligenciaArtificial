@@ -87,8 +87,21 @@ def depthFirstSearch(problem):
     print "Is the start a goal?", problem.isGoalState(problem.getStartState())
     print "Start's successors:", problem.getSuccessors(problem.getStartState())
     """
-    "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    borda = util.Stack()
+    estadoInicial = problem.getStartState()
+    borda.push((estadoInicial, [], []))
+
+    while not borda.isEmpty():
+        no, acoes, visitados = borda.pop()
+        for coord, direcao, passos in problem.getSuccessors(no):
+            if not coord in visitados:
+                if problem.isGoalState(coord):
+                    return acoes + [direcao]
+                nova_acao = acoes + [direcao]
+                aux = visitados + [no]
+                borda.push((coord, nova_acao, aux))
+    return []
+
 
 def breadthFirstSearch(problem):
     """Search the shallowest nodes in the search tree first."""
