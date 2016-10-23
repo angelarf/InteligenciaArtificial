@@ -5,7 +5,7 @@
 # educational purposes provided that (1) you do not distribute or publish
 # solutions, (2) you retain this notice, and (3) you provide clear
 # attribution to UC Berkeley, including a link to http://ai.berkeley.edu.
-# 
+#
 # Attribution Information: The Pacman AI projects were developed at UC Berkeley.
 # The core projects and autograders were primarily created by John DeNero
 # (denero@cs.berkeley.edu) and Dan Klein (klein@cs.berkeley.edu).
@@ -132,8 +132,23 @@ def iterativeDeepeningSearch(problem):
     Your search algorithm needs to return a list of actions that reaches the
     goal. Make sure to implement a graph search algorithm.
     """
-    "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    import itertools
+
+    borda = util.Stack()
+    estadoInicial = problem.getStartState()
+    borda.push((estadoInicial, [], []))
+
+    for depth in itertools.count():
+        for i in range(depth):
+            no, acoes, visitados = borda.pop()
+            for coord, direcao, passos in problem.getSuccessors(no):
+                if not coord in visitados:
+                    if problem.isGoalState(coord):
+                        return acoes + [direcao]
+                    nova_acao = acoes + [direcao]
+                    aux = visitados + [no]
+                    borda.push((coord, nova_acao, aux))
+    return []
 
 def uniformCostSearch(problem):
     """Search the node of least total cost first."""
@@ -180,7 +195,7 @@ def aStarSearch(problem, heuristic=nullHeuristic):
                 custo = problem.getCostOfActions(aux) + heuristic(coord, problem)
                 borda.push((coord, aux), custo)
     return []
-    
+
 
 
 # Abbreviations
