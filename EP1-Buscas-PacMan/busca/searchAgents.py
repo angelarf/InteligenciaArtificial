@@ -294,15 +294,25 @@ class CornersProblem(search.SearchProblem):
         Returns the start state (in your state space, not the full Pacman state
         space)
         """
-        "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        return (self.startingPosition, [])
 
     def isGoalState(self, state):
         """
         Returns whether this search state is a goal state of the problem.
         """
-        "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        no = state[0]
+        cantoVisitado = state[1]
+        if no in self.corners:
+            if not no in cantoVisitado:
+                cantoVisitado.append(no)
+            qtdVisitado = len(cantoVisitado)
+            if qtdVisitado == 4:
+                verifica = True
+            else:
+                verifica = False
+            return verifica
+        return False
+
 
     def getSuccessors(self, state):
         """
@@ -314,7 +324,8 @@ class CornersProblem(search.SearchProblem):
             state, 'action' is the action required to get there, and 'stepCost'
             is the incremental cost of expanding to that successor
         """
-
+        x,y = state[0]
+        cantoVisitado = state[1]
         successors = []
         for action in [Directions.NORTH, Directions.SOUTH, Directions.EAST, Directions.WEST]:
             # Add a successor state to the successor list if the action is legal
@@ -323,8 +334,18 @@ class CornersProblem(search.SearchProblem):
             #   dx, dy = Actions.directionToVector(action)
             #   nextx, nexty = int(x + dx), int(y + dy)
             #   hitsWall = self.walls[nextx][nexty]
+            dx,dy = Actions.directionToVector(action)
+            nextx, nexty = int(x + dx), int(y + dy)
+            hitsWall = self.walls[nextx][nexty]
 
-            "*** YOUR CODE HERE ***"
+            if not hitsWall:
+                proxCantoVistiados = list(cantoVisitado)
+                next_no = (nextx,nexty)
+                if next_no in self.corners:
+                    if not next_no in proxCantoVistiados:
+                        proxCantoVistiados.append(next_no)
+                proximo = ((next_no, proxCantoVistiados), action, 1)
+                successors.append(proximo)
 
         self._expanded += 1 # DO NOT CHANGE
         return successors
@@ -360,7 +381,25 @@ def cornersHeuristic(state, problem):
     walls = problem.walls # These are the walls of the maze, as a Grid (game.py)
 
     "*** YOUR CODE HERE ***"
-    return 0 # Default to trivial solution
+    no = state[0]
+    cantoVisitado = state[1]
+    cantoNaoVisitado = []
+    soma = 0;
+
+    for canto in corners:
+        if not canto in cantoVisitado:
+            cantoNaoVisitado.append(canto)
+
+    atual = no
+
+    while len(cantoNaoVisitado) > 0:
+        distancia, canto = min([(util.manhattanDistance(atual, canto), canto) for canto in cantoNaoVisitado])
+        soma = soma + distancia
+        atual = canto
+        cantoNaoVisitado.remove(canto)
+
+    print soma
+    return soma
 
 class AStarCornersAgent(SearchAgent):
     "A SearchAgent for FoodSearchProblem using A* and your foodHeuristic"
